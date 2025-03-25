@@ -1,7 +1,6 @@
 services:
   - type: web
     name: policy-dashboard
-    env: python
+    runtime: python
     buildCommand: ""
     startCommand: python app.py
-    plan: free
