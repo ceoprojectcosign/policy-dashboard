@@ -30,6 +30,7 @@ def clean_parsed_text_from_doc(doc):
 # ✅ Now this is your actual route
 @app.route("/policy/<series_id>/<policy_id>")
 def view_policy(series_id, policy_id):
+    return f"<h1>Policy {policy_id} from Series {series_id}</h1>"
 
 @app.route("/")
 def home():
