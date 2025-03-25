@@ -10,6 +10,27 @@ os.makedirs("cache", exist_ok=True)
 
 app = Flask(__name__)
 
+# ✅ This is your helper function (NO @app.route here!)
+def clean_parsed_text_from_doc(doc):
+    raw_text = "\n".join([page.get_text() for page in doc])
+    lines = raw_text.splitlines()
+    cleaned = []
+
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if not line:
+            continue
+        if cleaned and not lines[i - 1].endswith(('.', ':', '?')) and not line[0].isupper():
+            cleaned[-1] += ' ' + line
+        else:
+            cleaned.append(line)
+
+    return "\n\n".join(cleaned)
+
+# ✅ Now this is your actual route
+@app.route("/policy/<series_id>/<policy_id>")
+def view_policy(series_id, policy_id):
+
 @app.route("/")
 def home():
     return render_template_string("""
