@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Series {{ series_id }}</title>
+</head>
+<body>
+    <h1>Policies in Series {{ series_id }}</h1>
+    <ul>
+        {% for policy in policies %}
+            <li>
+                <a href="{{ url_for('view_policy', series_id=series_id, policy_id=policy.id) }}">
+                    {{ policy.title }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>
