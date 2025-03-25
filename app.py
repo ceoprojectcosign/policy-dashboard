@@ -6,6 +6,8 @@ import os
 import fitz  # PyMuPDF
 import re
 
+os.makedirs("cache", exist_ok=True)
+
 app = Flask(__name__)
 
 @app.route("/")
