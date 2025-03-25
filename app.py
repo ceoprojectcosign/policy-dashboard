@@ -41,6 +41,23 @@ def home():
     """)
 
 @app.route("/policy/<series_id>/<policy_id>")
+def clean_parsed_text_from_doc(doc):
+    raw_text = "\n".join([page.get_text() for page in doc])
+    lines = raw_text.splitlines()
+    cleaned = []
+
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if not line:
+            continue
+        # Merge lines that likely belong to the same paragraph
+        if cleaned and not lines[i - 1].endswith(('.', ':', '?')) and not line[0].isupper():
+            cleaned[-1] += ' ' + line
+        else:
+            cleaned.append(line)
+
+    return "\n\n".join(cleaned)
+
 def view_policy(series_id, policy_id):
     cache_file = f"cache/{series_id}_{policy_id}.txt"
 
@@ -84,7 +101,29 @@ def view_policy(series_id, policy_id):
             try:
                 pdf_response = requests.get(pdf_url)
                 doc = fitz.open(stream=pdf_response.content, filetype="pdf")
-                text = "\n".join([page.get_text() for page in doc])
+                raw_text = "\n".join([page.get_text() for page in doc])
+
+                # Basic text cleanup
+                lines = raw_text.splitlines()
+                cleaned_lines = []
+
+                for i, line in enumerate(lines):
+                    line = line.strip()
+
+                    # Skip empty lines or lines with only whitespace
+                    if not line:
+                        continue
+
+                    # Merge lines that probably belong to the same paragraph
+                    if cleaned_lines and not lines[i - 1].endswith(('.', ':', '?')) and not line[0].isupper():
+                        cleaned_lines[-1] += ' ' + line
+                    else:
+                        cleaned_lines.append(line)
+
+                # Final cleaned string
+                text = clean_parsed_text_from_doc(doc)
+
+
                 doc.close()
                 with open(cache_file, "w", encoding="utf-8") as f:
                     f.write(text)
